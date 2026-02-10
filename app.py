@@ -22,7 +22,7 @@ st.markdown("Gestisci e aggiorna i tuoi file JSON della Formula 1")
 DATA_DIR = "data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# Schema dei file con specifiche di tipo più precise
+# Schema dei file aggiornato
 SCHEMAS = {
     "f1db-drivers.json": {
         "fields": [
@@ -86,10 +86,56 @@ SCHEMAS = {
             {"name": "totalSprintRaceWins", "type": "integer", "required": True}
         ]
     },
+    "f1db-races.json": {
+        "fields": [
+            {"name": "id", "type": "integer", "required": True},
+            {"name": "year", "type": "text", "required": True},
+            {"name": "round", "type": "integer", "required": True},
+            {"name": "date", "type": "date", "required": True},
+            {"name": "time", "type": "text", "required": True},
+            {"name": "grandPrixId", "type": "text", "required": True},
+            {"name": "officialName", "type": "text", "required": True},
+            {"name": "qualifyingFormat", "type": "select", "options": ["KNOCKOUT", "ONE_SHOT", "GROUP", "ELIMINATION", None], "required": True},
+            {"name": "sprintQualifyingFormat", "type": "select", "options": ["KNOCKOUT", "ONE_SHOT", "GROUP", "ELIMINATION", None], "required": False},
+            {"name": "circuitId", "type": "text", "required": True},
+            {"name": "circuitType", "type": "select", "options": ["RACE", "SPRINT", "TEST"], "required": True},
+            {"name": "direction", "type": "select", "options": ["CLOCKWISE", "ANTI_CLOCKWISE"], "required": True},
+            {"name": "courseLength", "type": "float", "required": True},
+            {"name": "turns", "type": "integer", "required": True},
+            {"name": "laps", "type": "integer", "required": True},
+            {"name": "distance", "type": "float", "required": True},
+            {"name": "scheduledLaps", "type": "integer", "required": False},
+            {"name": "scheduledDistance", "type": "float", "required": False},
+            {"name": "driversChampionshipDecider", "type": "checkbox", "required": True},
+            {"name": "constructorsChampionshipDecider", "type": "checkbox", "required": True},
+            {"name": "preQualifyingDate", "type": "date", "required": False},
+            {"name": "preQualifyingTime", "type": "text", "required": False},
+            {"name": "freePractice1Date", "type": "date", "required": True},
+            {"name": "freePractice1Time", "type": "text", "required": True},
+            {"name": "freePractice2Date", "type": "date", "required": True},
+            {"name": "freePractice2Time", "type": "text", "required": True},
+            {"name": "freePractice3Date", "type": "date", "required": True},
+            {"name": "freePractice3Time", "type": "text", "required": True},
+            {"name": "freePractice4Date", "type": "date", "required": False},
+            {"name": "freePractice4Time", "type": "text", "required": False},
+            {"name": "qualifying1Date", "type": "date", "required": False},
+            {"name": "qualifying1Time", "type": "text", "required": False},
+            {"name": "qualifying2Date", "type": "date", "required": False},
+            {"name": "qualifying2Time", "type": "text", "required": False},
+            {"name": "qualifyingDate", "type": "date", "required": True},
+            {"name": "qualifyingTime", "type": "text", "required": True},
+            {"name": "sprintQualifyingDate", "type": "date", "required": False},
+            {"name": "sprintQualifyingTime", "type": "text", "required": False},
+            {"name": "sprintRaceDate", "type": "date", "required": False},
+            {"name": "sprintRaceTime", "type": "text", "required": False},
+            {"name": "warmingUpDate", "type": "date", "required": False},
+            {"name": "warmingUpTime", "type": "text", "required": False}
+        ]
+    },
     "f1db-races-race-results.json": {
         "fields": [
             {"name": "raceId", "type": "integer", "required": True},
-            {"name": "year", "type": "integer", "required": True},
+            {"name": "year", "type": "text", "required": True},
             {"name": "round", "type": "integer", "required": True},
             {"name": "positionDisplayOrder", "type": "integer", "required": True},
             {"name": "positionNumber", "type": "integer", "required": True},
@@ -123,6 +169,21 @@ SCHEMAS = {
             {"name": "driverOfTheDay", "type": "checkbox", "required": True},
             {"name": "grandSlam", "type": "checkbox", "required": True}
         ]
+    },
+    "f1db-races-constructor-standings.json": {
+        "fields": [
+            {"name": "raceId", "type": "integer", "required": True},
+            {"name": "year", "type": "text", "required": True},
+            {"name": "round", "type": "integer", "required": True},
+            {"name": "positionDisplayOrder", "type": "integer", "required": True},
+            {"name": "positionNumber", "type": "integer", "required": True},
+            {"name": "positionText", "type": "text", "required": True},
+            {"name": "constructorId", "type": "text", "required": True},
+            {"name": "engineManufacturerId", "type": "text", "required": True},
+            {"name": "points", "type": "float", "required": True},
+            {"name": "positionsGained", "type": "integer", "required": True},
+            {"name": "championshipWon", "type": "checkbox", "required": True}
+        ]
     }
 }
 
@@ -154,29 +215,13 @@ def convert_string_to_date(date_str):
         return datetime.fromisoformat(date_str).date()
     return None
 
-def create_download_links(data, filename):
-    """Crea i link per il download in CSV e JSON"""
-    if not data:
-        return None, None
-    
-    # Crea DataFrame
-    df = pd.DataFrame(data)
-    
-    # Download CSV
-    csv = df.to_csv(index=False).encode('utf-8')
-    
-    # Download JSON
-    json_str = json.dumps(data, indent=2, ensure_ascii=False).encode('utf-8')
-    
-    return csv, json_str
-
 # Sidebar per la navigazione
 st.sidebar.title("Navigazione")
 
 # Seleziona tipo di file
 file_type = st.sidebar.selectbox(
     "Seleziona tipo di dati",
-    ["Piloti", "Costruttori", "Risultati Gare"],
+    ["Piloti", "Costruttori", "Gare", "Risultati Gare", "Classifica Costruttori"],
     index=0
 )
 
@@ -184,7 +229,9 @@ file_type = st.sidebar.selectbox(
 FILE_MAPPING = {
     "Piloti": "f1db-drivers.json",
     "Costruttori": "f1db-constructors.json",
-    "Risultati Gare": "f1db-races-race-results.json"
+    "Gare": "f1db-races.json",
+    "Risultati Gare": "f1db-races-race-results.json",
+    "Classifica Costruttori": "f1db-races-constructor-standings.json"
 }
 
 selected_file = FILE_MAPPING[file_type]
@@ -207,13 +254,26 @@ with tab1:
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Numero record", len(data))
+        
         with col2:
             if file_type == "Piloti":
                 st.metric("Piloti attivi", len([d for d in data if not d.get('dateOfDeath')]))
             elif file_type == "Costruttori":
                 st.metric("Costruttori", len(data))
+            elif file_type == "Gare":
+                st.metric("Stagioni", df['year'].nunique())
+            elif file_type == "Classifica Costruttori":
+                st.metric("Costruttori", df['constructorId'].nunique())
             else:
                 st.metric("Gare registrate", df['raceId'].nunique())
+        
+        with col3:
+            if file_type == "Gare":
+                st.metric("Circuiti", df['circuitId'].nunique())
+            elif file_type == "Risultati Gare":
+                st.metric("Piloti", df['driverId'].nunique())
+            elif file_type == "Classifica Costruttori":
+                st.metric("Gare", df['raceId'].nunique())
         
         # Filtri
         st.subheader("Filtri")
@@ -224,6 +284,14 @@ with tab1:
                 search_name = st.text_input("Cerca per nome")
                 if search_name:
                     df = df[df['name'].str.contains(search_name, case=False, na=False)]
+            elif 'officialName' in df.columns:
+                search_name = st.text_input("Cerca per nome gara")
+                if search_name:
+                    df = df[df['officialName'].str.contains(search_name, case=False, na=False)]
+            elif 'constructorId' in df.columns and file_type == "Classifica Costruttori":
+                search_constructor = st.text_input("Cerca costruttore")
+                if search_constructor:
+                    df = df[df['constructorId'].str.contains(search_constructor, case=False, na=False)]
         
         with col2:
             if 'year' in df.columns:
@@ -231,6 +299,39 @@ with tab1:
                 selected_year = st.selectbox("Filtra per anno", ["Tutti"] + list(years))
                 if selected_year != "Tutti":
                     df = df[df['year'] == selected_year]
+        
+        # Filtri aggiuntivi
+        if file_type == "Gare":
+            col3, col4 = st.columns(2)
+            with col3:
+                if 'circuitId' in df.columns:
+                    circuits = sorted(df['circuitId'].unique())
+                    selected_circuit = st.selectbox("Filtra per circuito", ["Tutti"] + list(circuits))
+                    if selected_circuit != "Tutti":
+                        df = df[df['circuitId'] == selected_circuit]
+            
+            with col4:
+                if 'grandPrixId' in df.columns:
+                    grand_prix = sorted(df['grandPrixId'].unique())
+                    selected_gp = st.selectbox("Filtra per Gran Premio", ["Tutti"] + list(grand_prix))
+                    if selected_gp != "Tutti":
+                        df = df[df['grandPrixId'] == selected_gp]
+        
+        elif file_type == "Classifica Costruttori":
+            col3, col4 = st.columns(2)
+            with col3:
+                if 'raceId' in df.columns:
+                    race_ids = sorted(df['raceId'].unique())
+                    selected_race = st.selectbox("Filtra per ID Gara", ["Tutti"] + list(race_ids))
+                    if selected_race != "Tutti":
+                        df = df[df['raceId'] == selected_race]
+            
+            with col4:
+                if 'constructorId' in df.columns:
+                    constructors = sorted(df['constructorId'].unique())
+                    selected_constructor = st.selectbox("Filtra per costruttore", ["Tutti"] + list(constructors))
+                    if selected_constructor != "Tutti":
+                        df = df[df['constructorId'] == selected_constructor]
         
         # Mostra dati
         st.dataframe(
@@ -308,7 +409,7 @@ with tab2:
                         label,
                         value=0.0,
                         step=0.1,
-                        format="%.1f"
+                        format="%.3f" if field_name in ["courseLength", "distance"] else "%.1f"
                     )
                 
                 elif field_type == "date":
@@ -356,6 +457,10 @@ with tab2:
                     elif field["type"] == "float" and field_name in form_data:
                         form_data[field_name] = float(form_data[field_name])
                 
+                # Per i campi year, assicurati che siano stringhe (per supportare "2026b")
+                if 'year' in form_data:
+                    form_data['year'] = str(form_data['year'])
+                
                 # Aggiungi nuovo record ai dati
                 data.append(form_data)
                 
@@ -375,45 +480,78 @@ with tab3:
     Puoi incollare:
     - Un singolo oggetto JSON: `{...}`
     - Un array di oggetti JSON: `[{...}, {...}, ...]`
-    
-    Esempio per un pilota:
-    ```json
-    {
-        "id": "nuovo-pilota",
-        "name": "Nuovo Pilota",
-        "firstName": "Nuovo",
-        "lastName": "Pilota",
-        "fullName": "Nuovo Pilota",
-        "abbreviation": "NUP",
-        "permanentNumber": "99",
-        "gender": "MALE",
-        "dateOfBirth": "2000-01-01",
-        "dateOfDeath": null,
-        "placeOfBirth": "Città",
-        "countryOfBirthCountryId": "italy",
-        "nationalityCountryId": "italy",
-        "secondNationalityCountryId": null,
-        "bestChampionshipPosition": 0,
-        "bestStartingGridPosition": 0,
-        "bestRaceResult": 0,
-        "bestSprintRaceResult": null,
-        "totalChampionshipWins": 0,
-        "totalRaceEntries": 0,
-        "totalRaceStarts": 0,
-        "totalRaceWins": 0,
-        "totalRaceLaps": 0,
-        "totalPodiums": 0,
-        "totalPoints": 0,
-        "totalChampionshipPoints": 0,
-        "totalPolePositions": 0,
-        "totalFastestLaps": 0,
-        "totalSprintRaceStarts": 0,
-        "totalSprintRaceWins": 0,
-        "totalDriverOfTheDay": 0,
-        "totalGrandSlams": 0
-    }
-    ```
     """)
+    
+    # Esempi basati sul tipo di file
+    if file_type == "Gare":
+        st.markdown("""
+        **Esempio per una gara:**
+        ```json
+        {
+            "id": 1173,
+            "year": "2026",
+            "round": 24,
+            "date": "2026-12-06",
+            "time": "13:00",
+            "grandPrixId": "abu-dhabi",
+            "officialName": "Formula 1 Etihad Airways Abu Dhabi Grand Prix 2026",
+            "qualifyingFormat": "KNOCKOUT",
+            "sprintQualifyingFormat": null,
+            "circuitId": "yas-marina",
+            "circuitType": "RACE",
+            "direction": "ANTI_CLOCKWISE",
+            "courseLength": 5.281,
+            "turns": 16,
+            "laps": 58,
+            "distance": 306.183,
+            "scheduledLaps": null,
+            "scheduledDistance": null,
+            "driversChampionshipDecider": false,
+            "constructorsChampionshipDecider": false,
+            "preQualifyingDate": null,
+            "preQualifyingTime": null,
+            "freePractice1Date": "2026-12-04",
+            "freePractice1Time": "09:30",
+            "freePractice2Date": "2026-12-04",
+            "freePractice2Time": "13:00",
+            "freePractice3Date": "2026-12-05",
+            "freePractice3Time": "10:30",
+            "freePractice4Date": null,
+            "freePractice4Time": null,
+            "qualifying1Date": null,
+            "qualifying1Time": null,
+            "qualifying2Date": null,
+            "qualifying2Time": null,
+            "qualifyingDate": "2026-12-05",
+            "qualifyingTime": "14:00",
+            "sprintQualifyingDate": null,
+            "sprintQualifyingTime": null,
+            "sprintRaceDate": null,
+            "sprintRaceTime": null,
+            "warmingUpDate": null,
+            "warmingUpTime": null
+        }
+        ```
+        """)
+    elif file_type == "Classifica Costruttori":
+        st.markdown("""
+        **Esempio per classifica costruttori:**
+        ```json
+        {
+            "raceId": 1149,
+            "year": "2025",
+            "round": 24,
+            "positionDisplayOrder": 10,
+            "positionNumber": 10,
+            "positionText": "10",
+            "constructorId": "alpine",
+            "engineManufacturerId": "renault",
+            "points": 22,
+            "positionsGained": 0,
+            "championshipWon": false
+        }
+        ```
+        """)
     
     # Area di testo per incollare JSON
     json_input = st.text_area(
@@ -487,10 +625,69 @@ with tab3:
                     "totalSprintRaceStarts": 0,
                     "totalSprintRaceWins": 0
                 }
+            elif file_type == "Gare":
+                example = {
+                    "id": 1173 + len(data),
+                    "year": "2026",
+                    "round": len(data) + 1,
+                    "date": "2026-01-01",
+                    "time": "14:00",
+                    "grandPrixId": f"test-gp-{len(data)+1}",
+                    "officialName": f"Formula 1 Test Grand Prix {len(data)+1} 2026",
+                    "qualifyingFormat": "KNOCKOUT",
+                    "sprintQualifyingFormat": None,
+                    "circuitId": "test-circuit",
+                    "circuitType": "RACE",
+                    "direction": "CLOCKWISE",
+                    "courseLength": 5.0,
+                    "turns": 10,
+                    "laps": 60,
+                    "distance": 300.0,
+                    "scheduledLaps": None,
+                    "scheduledDistance": None,
+                    "driversChampionshipDecider": False,
+                    "constructorsChampionshipDecider": False,
+                    "preQualifyingDate": None,
+                    "preQualifyingTime": None,
+                    "freePractice1Date": "2025-12-30",
+                    "freePractice1Time": "10:00",
+                    "freePractice2Date": "2025-12-30",
+                    "freePractice2Time": "14:00",
+                    "freePractice3Date": "2025-12-31",
+                    "freePractice3Time": "11:00",
+                    "freePractice4Date": None,
+                    "freePractice4Time": None,
+                    "qualifying1Date": None,
+                    "qualifying1Time": None,
+                    "qualifying2Date": None,
+                    "qualifying2Time": None,
+                    "qualifyingDate": "2025-12-31",
+                    "qualifyingTime": "15:00",
+                    "sprintQualifyingDate": None,
+                    "sprintQualifyingTime": None,
+                    "sprintRaceDate": None,
+                    "sprintRaceTime": None,
+                    "warmingUpDate": None,
+                    "warmingUpTime": None
+                }
+            elif file_type == "Classifica Costruttori":
+                example = {
+                    "raceId": 1149,
+                    "year": "2026",
+                    "round": 1,
+                    "positionDisplayOrder": 1,
+                    "positionNumber": 1,
+                    "positionText": "1",
+                    "constructorId": "ferrari",
+                    "engineManufacturerId": "ferrari",
+                    "points": 44.0,
+                    "positionsGained": 0,
+                    "championshipWon": False
+                }
             else:  # Risultati Gare
                 example = {
                     "raceId": 1150,
-                    "year": 2026,
+                    "year": "2026",
                     "round": 25,
                     "positionDisplayOrder": 1,
                     "positionNumber": 1,
@@ -617,6 +814,10 @@ with tab4:
             options = {f"{d.get('name', '')} ({d.get('id', '')})": idx for idx, d in enumerate(data)}
         elif file_type == "Costruttori":
             options = {f"{d.get('name', '')} ({d.get('id', '')})": idx for idx, d in enumerate(data)}
+        elif file_type == "Gare":
+            options = {f"{d.get('officialName', '')} (Round {d.get('round', '')})": idx for idx, d in enumerate(data)}
+        elif file_type == "Classifica Costruttori":
+            options = {f"Race {d.get('raceId', '')} - {d.get('constructorId', '')} (Pos {d.get('positionNumber', '')})": idx for idx, d in enumerate(data)}
         else:
             options = {f"Race {d.get('raceId', '')} - Driver {d.get('driverId', '')}": idx for idx, d in enumerate(data)}
         
@@ -672,7 +873,7 @@ with tab4:
                                 label,
                                 value=float(current_value) if current_value is not None else 0.0,
                                 step=0.1,
-                                format="%.1f",
+                                format="%.3f" if field_name in ["courseLength", "distance"] else "%.1f",
                                 key=f"edit_{field_name}_{record_idx}"
                             )
                         
@@ -738,6 +939,10 @@ with tab4:
                             elif field["type"] == "float" and field_name in edit_data:
                                 edit_data[field_name] = float(edit_data[field_name])
                         
+                        # Per i campi year, assicurati che siano stringhe
+                        if 'year' in edit_data:
+                            edit_data['year'] = str(edit_data['year'])
+                        
                         # Aggiorna record
                         data[record_idx] = edit_data
                         
@@ -760,10 +965,19 @@ with tab4:
                     duplicated_record = copy.deepcopy(record)
                     
                     # Modifica l'ID per evitare duplicati
-                    if 'id' in duplicated_record:
+                    if file_type == "Gare":
+                        # Per le gare, incrementa l'ID
+                        max_id = max([d.get('id', 0) for d in data])
+                        duplicated_record['id'] = max_id + 1
+                    elif file_type == "Classifica Costruttori":
+                        # Per le classifiche, modifica raceId o round
+                        duplicated_record['round'] = duplicated_record.get('round', 0) + 1
+                    elif 'id' in duplicated_record:
                         duplicated_record['id'] = f"{duplicated_record['id']}-copy-{len(data)}"
                     
-                    if 'name' in duplicated_record:
+                    if 'officialName' in duplicated_record:
+                        duplicated_record['officialName'] = f"{duplicated_record['officialName']} (Copia)"
+                    elif 'name' in duplicated_record:
                         duplicated_record['name'] = f"{duplicated_record['name']} (Copia)"
                     
                     # Aggiungi alla lista
@@ -854,7 +1068,7 @@ st.sidebar.subheader("📄 Download singolo")
 
 selected_download = st.sidebar.selectbox(
     "Seleziona file da scaricare",
-    ["Piloti", "Costruttori", "Risultati Gare"]
+    ["Piloti", "Costruttori", "Gare", "Risultati Gare", "Classifica Costruttori"]
 )
 
 download_file = FILE_MAPPING[selected_download]
@@ -902,7 +1116,17 @@ if data and st.sidebar.button("Esporta record selezionato", use_container_width=
         
         json_record = json.dumps(record, indent=2, ensure_ascii=False).encode('utf-8')
         
-        record_name = record.get('name', record.get('id', 'record'))
+        if file_type == "Gare":
+            record_name = record.get('grandPrixId', record.get('officialName', 'race'))
+        elif file_type == "Piloti":
+            record_name = record.get('name', record.get('id', 'driver'))
+        elif file_type == "Costruttori":
+            record_name = record.get('name', record.get('id', 'constructor'))
+        elif file_type == "Classifica Costruttori":
+            record_name = f"constructor_standings_race{record.get('raceId', '')}_{record.get('constructorId', '')}"
+        else:
+            record_name = f"race_{record.get('raceId', 'result')}"
+        
         st.sidebar.download_button(
             label=f"Scarica {record_name}.json",
             data=json_record,
