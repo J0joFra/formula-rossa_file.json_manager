@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 import copy
+import tempfile
 
 # Configurazione pagina
 st.set_page_config(
@@ -153,6 +154,22 @@ def convert_string_to_date(date_str):
         return datetime.fromisoformat(date_str).date()
     return None
 
+def create_download_links(data, filename):
+    """Crea i link per il download in CSV e JSON"""
+    if not data:
+        return None, None
+    
+    # Crea DataFrame
+    df = pd.DataFrame(data)
+    
+    # Download CSV
+    csv = df.to_csv(index=False).encode('utf-8')
+    
+    # Download JSON
+    json_str = json.dumps(data, indent=2, ensure_ascii=False).encode('utf-8')
+    
+    return csv, json_str
+
 # Sidebar per la navigazione
 st.sidebar.title("Navigazione")
 
@@ -223,13 +240,37 @@ with tab1:
         )
         
         # Opzione per scaricare i dati
-        csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="📥 Scarica come CSV",
-            data=csv,
-            file_name=f"{selected_file.replace('.json', '')}.csv",
-            mime="text/csv"
-        )
+        st.subheader("📥 Download dati")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Download CSV
+            csv_data = df.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="💾 Scarica come CSV",
+                data=csv_data,
+                file_name=f"{selected_file.replace('.json', '')}.csv",
+                mime="text/csv",
+                use_container_width=True,
+                help="Scarica i dati in formato CSV (Excel)"
+            )
+        
+        with col2:
+            # Download JSON
+            json_data = json.dumps(data, indent=2, ensure_ascii=False).encode('utf-8')
+            st.download_button(
+                label="📄 Scarica come JSON",
+                data=json_data,
+                file_name=selected_file,
+                mime="application/json",
+                use_container_width=True,
+                help="Scarica i dati in formato JSON originale"
+            )
+        
+        # Anteprima JSON
+        with st.expander("👁️ Anteprima JSON"):
+            st.json(data[:10] if len(data) > 10 else data)  # Mostra solo i primi 10 record
+    
     else:
         st.info("Nessun dato disponibile. Usa la tab 'Aggiungi' per inserire nuovi record.")
 
@@ -751,25 +792,83 @@ st.sidebar.info(
 
 # Bottone per scaricare tutti i dati
 st.sidebar.markdown("---")
-if st.sidebar.button("📥 Scarica tutti i dati"):
-    # Crea un file ZIP con tutti i JSON
-    import zipfile
-    import io
-    
-    zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
-        for filename in FILE_MAPPING.values():
-            filepath = os.path.join(DATA_DIR, filename)
-            if os.path.exists(filepath):
-                zip_file.write(filepath, filename)
-    
-    zip_buffer.seek(0)
+st.sidebar.subheader("📥 Download completo")
+
+col1, col2 = st.sidebar.columns(2)
+
+with col1:
+    if st.button("💾 CSV Completo", use_container_width=True):
+        # Crea un file ZIP con tutti i CSV
+        import zipfile
+        import io
+        
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+            for filename in FILE_MAPPING.values():
+                filepath = os.path.join(DATA_DIR, filename)
+                if os.path.exists(filepath):
+                    data = load_json_file(filename)
+                    if data:
+                        df = pd.DataFrame(data)
+                        csv_data = df.to_csv(index=False).encode('utf-8')
+                        zip_file.writestr(f"{filename.replace('.json', '')}.csv", csv_data)
+        
+        zip_buffer.seek(0)
+        
+        st.sidebar.download_button(
+            label="Scarica ZIP CSV",
+            data=zip_buffer,
+            file_name="f1db_data_csv.zip",
+            mime="application/zip",
+            use_container_width=True
+        )
+
+with col2:
+    if st.button("📄 JSON Completo", use_container_width=True):
+        # Crea un file ZIP con tutti i JSON
+        import zipfile
+        import io
+        
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+            for filename in FILE_MAPPING.values():
+                filepath = os.path.join(DATA_DIR, filename)
+                if os.path.exists(filepath):
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        json_data = f.read()
+                        zip_file.writestr(filename, json_data)
+        
+        zip_buffer.seek(0)
+        
+        st.sidebar.download_button(
+            label="Scarica ZIP JSON",
+            data=zip_buffer,
+            file_name="f1db_data_json.zip",
+            mime="application/zip",
+            use_container_width=True
+        )
+
+# Download singolo file JSON dalla sidebar
+st.sidebar.markdown("---")
+st.sidebar.subheader("📄 Download singolo")
+
+selected_download = st.sidebar.selectbox(
+    "Seleziona file da scaricare",
+    ["Piloti", "Costruttori", "Risultati Gare"]
+)
+
+download_file = FILE_MAPPING[selected_download]
+download_data = load_json_file(download_file)
+
+if download_data:
+    json_str = json.dumps(download_data, indent=2, ensure_ascii=False).encode('utf-8')
     
     st.sidebar.download_button(
-        label="Scarica ZIP",
-        data=zip_buffer,
-        file_name="f1db_data.zip",
-        mime="application/zip"
+        label=f"Scarica {selected_download}.json",
+        data=json_str,
+        file_name=download_file,
+        mime="application/json",
+        use_container_width=True
     )
 
 # Bottone per upload file JSON
@@ -783,7 +882,7 @@ uploaded_file = st.sidebar.file_uploader(
 if uploaded_file is not None:
     try:
         new_data = json.load(uploaded_file)
-        if st.sidebar.button(f"Sostituisci {file_type} con file caricato", type="primary"):
+        if st.sidebar.button(f"Sostituisci {file_type} con file caricato", type="primary", use_container_width=True):
             # Sostituisci i dati
             data = new_data if isinstance(new_data, list) else [new_data]
             if save_json_file(selected_file, data):
@@ -791,3 +890,23 @@ if uploaded_file is not None:
                 st.rerun()
     except Exception as e:
         st.sidebar.error(f"Errore nel caricamento del file: {str(e)}")
+
+# Esporta singolo record come JSON
+st.sidebar.markdown("---")
+st.sidebar.subheader("🔖 Esporta record")
+
+if data and st.sidebar.button("Esporta record selezionato", use_container_width=True):
+    if 'selected_key' in locals() and selected_key:
+        record_idx = options[selected_key]
+        record = data[record_idx]
+        
+        json_record = json.dumps(record, indent=2, ensure_ascii=False).encode('utf-8')
+        
+        record_name = record.get('name', record.get('id', 'record'))
+        st.sidebar.download_button(
+            label=f"Scarica {record_name}.json",
+            data=json_record,
+            file_name=f"{record_name}.json",
+            mime="application/json",
+            use_container_width=True
+        )
