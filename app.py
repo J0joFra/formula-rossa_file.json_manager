@@ -177,7 +177,7 @@ schema = SCHEMAS[selected_file]
 data = load_json_file(selected_file)
 
 # Layout principale
-tab1, tab2, tab3 = st.tabs(["Visualizza", "Aggiungi", "Modifica"])
+tab1, tab2, tab3, tab4 = st.tabs(["Visualizza", "Aggiungi singolo", "Aggiungi multipli", "Modifica"])
 
 with tab1:
     st.header(f"📊 Visualizza {file_type}")
@@ -309,6 +309,246 @@ with tab2:
                     st.error("Errore nel salvataggio del record")
 
 with tab3:
+    st.header(f"📝 Aggiungi più {file_type[:-1].replace('f1db-', '').replace('.json', '')}")
+    
+    st.markdown("""
+    **Incolla qui sotto i nuovi record in formato JSON.**
+    
+    Puoi incollare:
+    - Un singolo oggetto JSON: `{...}`
+    - Un array di oggetti JSON: `[{...}, {...}, ...]`
+    
+    Esempio per un pilota:
+    ```json
+    {
+        "id": "nuovo-pilota",
+        "name": "Nuovo Pilota",
+        "firstName": "Nuovo",
+        "lastName": "Pilota",
+        "fullName": "Nuovo Pilota",
+        "abbreviation": "NUP",
+        "permanentNumber": "99",
+        "gender": "MALE",
+        "dateOfBirth": "2000-01-01",
+        "dateOfDeath": null,
+        "placeOfBirth": "Città",
+        "countryOfBirthCountryId": "italy",
+        "nationalityCountryId": "italy",
+        "secondNationalityCountryId": null,
+        "bestChampionshipPosition": 0,
+        "bestStartingGridPosition": 0,
+        "bestRaceResult": 0,
+        "bestSprintRaceResult": null,
+        "totalChampionshipWins": 0,
+        "totalRaceEntries": 0,
+        "totalRaceStarts": 0,
+        "totalRaceWins": 0,
+        "totalRaceLaps": 0,
+        "totalPodiums": 0,
+        "totalPoints": 0,
+        "totalChampionshipPoints": 0,
+        "totalPolePositions": 0,
+        "totalFastestLaps": 0,
+        "totalSprintRaceStarts": 0,
+        "totalSprintRaceWins": 0,
+        "totalDriverOfTheDay": 0,
+        "totalGrandSlams": 0
+    }
+    ```
+    """)
+    
+    # Area di testo per incollare JSON
+    json_input = st.text_area(
+        "Incolla i dati JSON qui:",
+        height=300,
+        placeholder='{"id": "example", "name": "Example Name", ...} oppure [{"id": "example1", ...}, {"id": "example2", ...}]'
+    )
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("📋 Carica da esempio", use_container_width=True):
+            # Mostra un esempio basato sul tipo di file
+            if file_type == "Piloti":
+                example = {
+                    "id": f"nuovo-pilota-{len(data)+1}",
+                    "name": f"Nuovo Pilota {len(data)+1}",
+                    "firstName": "Nuovo",
+                    "lastName": f"Pilota {len(data)+1}",
+                    "fullName": f"Nuovo Pilota {len(data)+1}",
+                    "abbreviation": "NUP",
+                    "permanentNumber": str(90 + len(data)),
+                    "gender": "MALE",
+                    "dateOfBirth": "2000-01-01",
+                    "dateOfDeath": None,
+                    "placeOfBirth": "Città",
+                    "countryOfBirthCountryId": "italy",
+                    "nationalityCountryId": "italy",
+                    "secondNationalityCountryId": None,
+                    "bestChampionshipPosition": 0,
+                    "bestStartingGridPosition": 0,
+                    "bestRaceResult": 0,
+                    "bestSprintRaceResult": None,
+                    "totalChampionshipWins": 0,
+                    "totalRaceEntries": 0,
+                    "totalRaceStarts": 0,
+                    "totalRaceWins": 0,
+                    "totalRaceLaps": 0,
+                    "totalPodiums": 0,
+                    "totalPoints": 0,
+                    "totalChampionshipPoints": 0,
+                    "totalPolePositions": 0,
+                    "totalFastestLaps": 0,
+                    "totalSprintRaceStarts": 0,
+                    "totalSprintRaceWins": 0,
+                    "totalDriverOfTheDay": 0,
+                    "totalGrandSlams": 0
+                }
+            elif file_type == "Costruttori":
+                example = {
+                    "id": f"nuovo-costruttore-{len(data)+1}",
+                    "name": f"Nuovo Costruttore {len(data)+1}",
+                    "fullName": f"Nuovo Costruttore Racing {len(data)+1}",
+                    "countryId": "italy",
+                    "bestChampionshipPosition": 0,
+                    "bestStartingGridPosition": 0,
+                    "bestRaceResult": 0,
+                    "bestSprintRaceResult": None,
+                    "totalChampionshipWins": 0,
+                    "totalRaceEntries": 0,
+                    "totalRaceStarts": 0,
+                    "totalRaceWins": 0,
+                    "total1And2Finishes": 0,
+                    "totalRaceLaps": 0,
+                    "totalPodiums": 0,
+                    "totalPodiumRaces": 0,
+                    "totalPoints": 0,
+                    "totalChampionshipPoints": 0,
+                    "totalPolePositions": 0,
+                    "totalFastestLaps": 0,
+                    "totalSprintRaceStarts": 0,
+                    "totalSprintRaceWins": 0
+                }
+            else:  # Risultati Gare
+                example = {
+                    "raceId": 1150,
+                    "year": 2026,
+                    "round": 25,
+                    "positionDisplayOrder": 1,
+                    "positionNumber": 1,
+                    "positionText": "1",
+                    "driverNumber": "1",
+                    "driverId": "max-verstappen",
+                    "constructorId": "red-bull",
+                    "engineManufacturerId": "honda",
+                    "tyreManufacturerId": "pirelli",
+                    "sharedCar": False,
+                    "laps": 58,
+                    "time": "1:30:00.000",
+                    "timeMillis": 5400000,
+                    "timePenalty": None,
+                    "timePenaltyMillis": None,
+                    "gap": "0",
+                    "gapMillis": 0,
+                    "gapLaps": 0,
+                    "interval": None,
+                    "intervalMillis": None,
+                    "reasonRetired": None,
+                    "points": 25,
+                    "polePosition": True,
+                    "qualificationPositionNumber": 1,
+                    "qualificationPositionText": "1",
+                    "gridPositionNumber": 1,
+                    "gridPositionText": "1",
+                    "positionsGained": 0,
+                    "pitStops": 2,
+                    "fastestLap": True,
+                    "driverOfTheDay": True,
+                    "grandSlam": True
+                }
+            
+            st.session_state.example_json = json.dumps(example, indent=2, ensure_ascii=False)
+            st.rerun()
+    
+    with col2:
+        add_records = st.button("➕ Aggiungi record", type="primary", use_container_width=True)
+    
+    with col3:
+        if st.button("🔄 Reset", use_container_width=True):
+            st.session_state.example_json = ""
+            st.rerun()
+    
+    # Usa l'esempio se presente in session_state
+    if 'example_json' in st.session_state:
+        json_input = st.text_area(
+            "Incolla i dati JSON qui:",
+            value=st.session_state.example_json,
+            height=300
+        )
+    
+    if add_records and json_input:
+        try:
+            # Prova a parsare il JSON
+            new_data = json.loads(json_input)
+            
+            # Controlla se è un singolo oggetto o un array
+            if isinstance(new_data, dict):
+                new_records = [new_data]
+            elif isinstance(new_data, list):
+                new_records = new_data
+            else:
+                st.error("Il JSON deve essere un oggetto o un array di oggetti")
+                new_records = []
+            
+            if new_records:
+                # Validazione dei campi obbligatori
+                invalid_records = []
+                valid_records = []
+                
+                for i, record in enumerate(new_records):
+                    missing_fields = []
+                    for field in schema["fields"]:
+                        if field.get("required", False):
+                            field_name = field["name"]
+                            if field_name not in record or record[field_name] == "":
+                                missing_fields.append(field_name)
+                    
+                    if missing_fields:
+                        invalid_records.append({
+                            "index": i,
+                            "record": record,
+                            "missing_fields": missing_fields
+                        })
+                    else:
+                        valid_records.append(record)
+                
+                if invalid_records:
+                    st.error(f"{len(invalid_records)} record hanno campi obbligatori mancanti:")
+                    for invalid in invalid_records:
+                        st.write(f"Record {invalid['index']}: Mancano {', '.join(invalid['missing_fields'])}")
+                
+                if valid_records:
+                    # Aggiungi i record validi
+                    old_count = len(data)
+                    data.extend(valid_records)
+                    
+                    # Salva nel file
+                    if save_json_file(selected_file, data):
+                        st.success(f"Aggiunti {len(valid_records)} nuovi record! Totale: {old_count} → {len(data)}")
+                        
+                        # Mostra anteprima dei record aggiunti
+                        with st.expander("Anteprima dei record aggiunti"):
+                            df_new = pd.DataFrame(valid_records)
+                            st.dataframe(df_new, use_container_width=True)
+                        
+                        st.rerun()
+        
+        except json.JSONDecodeError as e:
+            st.error(f"Errore nel parsing JSON: {str(e)}")
+        except Exception as e:
+            st.error(f"Errore: {str(e)}")
+
+with tab4:
     st.header(f"✏️ Modifica {file_type}")
     
     if data:
@@ -386,11 +626,13 @@ with tab3:
                     
                     col_idx = (col_idx + 1) % 2
                 
-                col1, col2 = st.columns(2)
+                col1, col2, col3 = st.columns(3)
                 with col1:
-                    update_clicked = st.form_submit_button("Aggiorna record")
+                    update_clicked = st.form_submit_button("Aggiorna record", use_container_width=True)
                 with col2:
-                    delete_clicked = st.form_submit_button("Elimina record", type="secondary")
+                    delete_clicked = st.form_submit_button("Elimina record", type="secondary", use_container_width=True)
+                with col3:
+                    duplicate_clicked = st.form_submit_button("Duplica record", type="secondary", use_container_width=True)
                 
                 if update_clicked:
                     # Validazione
@@ -418,14 +660,32 @@ with tab3:
                             st.rerun()
                 
                 if delete_clicked:
-                    # Conferma eliminazione
-                    if st.warning("Sei sicuro di voler eliminare questo record?"):
-                        # Rimuovi record
-                        data.pop(record_idx)
-                        
-                        if save_json_file(selected_file, data):
-                            st.success("Record eliminato con successo!")
-                            st.rerun()
+                    # Rimuovi record
+                    deleted_record = data.pop(record_idx)
+                    
+                    if save_json_file(selected_file, data):
+                        st.success("Record eliminato con successo!")
+                        with st.expander("Record eliminato"):
+                            st.json(deleted_record)
+                        st.rerun()
+                
+                if duplicate_clicked:
+                    # Duplica il record
+                    duplicated_record = copy.deepcopy(record)
+                    
+                    # Modifica l'ID per evitare duplicati
+                    if 'id' in duplicated_record:
+                        duplicated_record['id'] = f"{duplicated_record['id']}-copy"
+                    
+                    if 'name' in duplicated_record:
+                        duplicated_record['name'] = f"{duplicated_record['name']} (Copia)"
+                    
+                    # Aggiungi alla lista
+                    data.append(duplicated_record)
+                    
+                    if save_json_file(selected_file, data):
+                        st.success("Record duplicato con successo!")
+                        st.rerun()
     else:
         st.info("Nessun dato disponibile da modificare.")
 
@@ -436,8 +696,9 @@ st.sidebar.info(
     **Istruzioni:**
     1. Seleziona il tipo di dati dalla sidebar
     2. Visualizza i dati nella tab 'Visualizza'
-    3. Aggiungi nuovi record nella tab 'Aggiungi'
-    4. Modifica o elimina record nella tab 'Modifica'
+    3. Aggiungi singoli record nella tab 'Aggiungi singolo'
+    4. Aggiungi più record insieme nella tab 'Aggiungi multipli'
+    5. Modifica o elimina record nella tab 'Modifica'
     
     I dati vengono salvati automaticamente nei file JSON.
     """
@@ -465,3 +726,23 @@ if st.sidebar.button("📥 Scarica tutti i dati"):
         file_name="f1db_data.zip",
         mime="application/zip"
     )
+
+# Bottone per upload file JSON
+st.sidebar.markdown("---")
+uploaded_file = st.sidebar.file_uploader(
+    "Carica file JSON",
+    type=['json'],
+    help="Carica un file JSON per sostituire i dati attuali"
+)
+
+if uploaded_file is not None:
+    try:
+        new_data = json.load(uploaded_file)
+        if st.sidebar.button(f"Sostituisci {file_type} con file caricato", type="primary"):
+            # Sostituisci i dati
+            data = new_data if isinstance(new_data, list) else [new_data]
+            if save_json_file(selected_file, data):
+                st.sidebar.success(f"Dati di {file_type} aggiornati dal file!")
+                st.rerun()
+    except Exception as e:
+        st.sidebar.error(f"Errore nel caricamento del file: {str(e)}")
