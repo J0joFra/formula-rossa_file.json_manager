@@ -21,7 +21,7 @@ st.markdown("Gestisci e aggiorna i tuoi file JSON della Formula 1")
 DATA_DIR = "data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# Schema dei file
+# Schema dei file con specifiche di tipo più precise
 SCHEMAS = {
     "f1db-drivers.json": {
         "fields": [
@@ -39,24 +39,24 @@ SCHEMAS = {
             {"name": "countryOfBirthCountryId", "type": "text", "required": True},
             {"name": "nationalityCountryId", "type": "text", "required": True},
             {"name": "secondNationalityCountryId", "type": "text", "required": False},
-            {"name": "bestChampionshipPosition", "type": "number", "required": True},
-            {"name": "bestStartingGridPosition", "type": "number", "required": True},
-            {"name": "bestRaceResult", "type": "number", "required": True},
-            {"name": "bestSprintRaceResult", "type": "number", "required": False},
-            {"name": "totalChampionshipWins", "type": "number", "required": True},
-            {"name": "totalRaceEntries", "type": "number", "required": True},
-            {"name": "totalRaceStarts", "type": "number", "required": True},
-            {"name": "totalRaceWins", "type": "number", "required": True},
-            {"name": "totalRaceLaps", "type": "number", "required": True},
-            {"name": "totalPodiums", "type": "number", "required": True},
-            {"name": "totalPoints", "type": "number", "required": True},
-            {"name": "totalChampionshipPoints", "type": "number", "required": True},
-            {"name": "totalPolePositions", "type": "number", "required": True},
-            {"name": "totalFastestLaps", "type": "number", "required": True},
-            {"name": "totalSprintRaceStarts", "type": "number", "required": True},
-            {"name": "totalSprintRaceWins", "type": "number", "required": True},
-            {"name": "totalDriverOfTheDay", "type": "number", "required": True},
-            {"name": "totalGrandSlams", "type": "number", "required": True}
+            {"name": "bestChampionshipPosition", "type": "integer", "required": True},
+            {"name": "bestStartingGridPosition", "type": "integer", "required": True},
+            {"name": "bestRaceResult", "type": "integer", "required": True},
+            {"name": "bestSprintRaceResult", "type": "integer", "required": False},
+            {"name": "totalChampionshipWins", "type": "integer", "required": True},
+            {"name": "totalRaceEntries", "type": "integer", "required": True},
+            {"name": "totalRaceStarts", "type": "integer", "required": True},
+            {"name": "totalRaceWins", "type": "integer", "required": True},
+            {"name": "totalRaceLaps", "type": "integer", "required": True},
+            {"name": "totalPodiums", "type": "integer", "required": True},
+            {"name": "totalPoints", "type": "float", "required": True},
+            {"name": "totalChampionshipPoints", "type": "float", "required": True},
+            {"name": "totalPolePositions", "type": "integer", "required": True},
+            {"name": "totalFastestLaps", "type": "integer", "required": True},
+            {"name": "totalSprintRaceStarts", "type": "integer", "required": True},
+            {"name": "totalSprintRaceWins", "type": "integer", "required": True},
+            {"name": "totalDriverOfTheDay", "type": "integer", "required": True},
+            {"name": "totalGrandSlams", "type": "integer", "required": True}
         ]
     },
     "f1db-constructors.json": {
@@ -65,33 +65,33 @@ SCHEMAS = {
             {"name": "name", "type": "text", "required": True},
             {"name": "fullName", "type": "text", "required": True},
             {"name": "countryId", "type": "text", "required": True},
-            {"name": "bestChampionshipPosition", "type": "number", "required": True},
-            {"name": "bestStartingGridPosition", "type": "number", "required": True},
-            {"name": "bestRaceResult", "type": "number", "required": True},
-            {"name": "bestSprintRaceResult", "type": "number", "required": False},
-            {"name": "totalChampionshipWins", "type": "number", "required": True},
-            {"name": "totalRaceEntries", "type": "number", "required": True},
-            {"name": "totalRaceStarts", "type": "number", "required": True},
-            {"name": "totalRaceWins", "type": "number", "required": True},
-            {"name": "total1And2Finishes", "type": "number", "required": True},
-            {"name": "totalRaceLaps", "type": "number", "required": True},
-            {"name": "totalPodiums", "type": "number", "required": True},
-            {"name": "totalPodiumRaces", "type": "number", "required": True},
-            {"name": "totalPoints", "type": "number", "required": True},
-            {"name": "totalChampionshipPoints", "type": "number", "required": True},
-            {"name": "totalPolePositions", "type": "number", "required": True},
-            {"name": "totalFastestLaps", "type": "number", "required": True},
-            {"name": "totalSprintRaceStarts", "type": "number", "required": True},
-            {"name": "totalSprintRaceWins", "type": "number", "required": True}
+            {"name": "bestChampionshipPosition", "type": "integer", "required": True},
+            {"name": "bestStartingGridPosition", "type": "integer", "required": True},
+            {"name": "bestRaceResult", "type": "integer", "required": True},
+            {"name": "bestSprintRaceResult", "type": "integer", "required": False},
+            {"name": "totalChampionshipWins", "type": "integer", "required": True},
+            {"name": "totalRaceEntries", "type": "integer", "required": True},
+            {"name": "totalRaceStarts", "type": "integer", "required": True},
+            {"name": "totalRaceWins", "type": "integer", "required": True},
+            {"name": "total1And2Finishes", "type": "integer", "required": True},
+            {"name": "totalRaceLaps", "type": "integer", "required": True},
+            {"name": "totalPodiums", "type": "integer", "required": True},
+            {"name": "totalPodiumRaces", "type": "integer", "required": True},
+            {"name": "totalPoints", "type": "float", "required": True},
+            {"name": "totalChampionshipPoints", "type": "float", "required": True},
+            {"name": "totalPolePositions", "type": "integer", "required": True},
+            {"name": "totalFastestLaps", "type": "integer", "required": True},
+            {"name": "totalSprintRaceStarts", "type": "integer", "required": True},
+            {"name": "totalSprintRaceWins", "type": "integer", "required": True}
         ]
     },
     "f1db-races-race-results.json": {
         "fields": [
-            {"name": "raceId", "type": "number", "required": True},
-            {"name": "year", "type": "number", "required": True},
-            {"name": "round", "type": "number", "required": True},
-            {"name": "positionDisplayOrder", "type": "number", "required": True},
-            {"name": "positionNumber", "type": "number", "required": True},
+            {"name": "raceId", "type": "integer", "required": True},
+            {"name": "year", "type": "integer", "required": True},
+            {"name": "round", "type": "integer", "required": True},
+            {"name": "positionDisplayOrder", "type": "integer", "required": True},
+            {"name": "positionNumber", "type": "integer", "required": True},
             {"name": "positionText", "type": "text", "required": True},
             {"name": "driverNumber", "type": "text", "required": True},
             {"name": "driverId", "type": "text", "required": True},
@@ -99,25 +99,25 @@ SCHEMAS = {
             {"name": "engineManufacturerId", "type": "text", "required": True},
             {"name": "tyreManufacturerId", "type": "text", "required": True},
             {"name": "sharedCar", "type": "checkbox", "required": True},
-            {"name": "laps", "type": "number", "required": True},
+            {"name": "laps", "type": "integer", "required": True},
             {"name": "time", "type": "text", "required": False},
-            {"name": "timeMillis", "type": "number", "required": False},
+            {"name": "timeMillis", "type": "integer", "required": False},
             {"name": "timePenalty", "type": "text", "required": False},
-            {"name": "timePenaltyMillis", "type": "number", "required": False},
+            {"name": "timePenaltyMillis", "type": "integer", "required": False},
             {"name": "gap", "type": "text", "required": True},
-            {"name": "gapMillis", "type": "number", "required": False},
-            {"name": "gapLaps", "type": "number", "required": True},
+            {"name": "gapMillis", "type": "integer", "required": False},
+            {"name": "gapLaps", "type": "integer", "required": True},
             {"name": "interval", "type": "text", "required": False},
-            {"name": "intervalMillis", "type": "number", "required": False},
+            {"name": "intervalMillis", "type": "integer", "required": False},
             {"name": "reasonRetired", "type": "text", "required": False},
-            {"name": "points", "type": "number", "required": False},
+            {"name": "points", "type": "float", "required": False},
             {"name": "polePosition", "type": "checkbox", "required": True},
-            {"name": "qualificationPositionNumber", "type": "number", "required": True},
+            {"name": "qualificationPositionNumber", "type": "integer", "required": True},
             {"name": "qualificationPositionText", "type": "text", "required": True},
-            {"name": "gridPositionNumber", "type": "number", "required": True},
+            {"name": "gridPositionNumber", "type": "integer", "required": True},
             {"name": "gridPositionText", "type": "text", "required": True},
-            {"name": "positionsGained", "type": "number", "required": True},
-            {"name": "pitStops", "type": "number", "required": True},
+            {"name": "positionsGained", "type": "integer", "required": True},
+            {"name": "pitStops", "type": "integer", "required": True},
             {"name": "fastestLap", "type": "checkbox", "required": True},
             {"name": "driverOfTheDay", "type": "checkbox", "required": True},
             {"name": "grandSlam", "type": "checkbox", "required": True}
@@ -254,11 +254,20 @@ with tab2:
                 if field_type == "text":
                     form_data[field_name] = st.text_input(label, value="")
                 
-                elif field_type == "number":
+                elif field_type == "integer":
                     form_data[field_name] = st.number_input(
                         label,
                         value=0,
-                        step=1 if field_name in ["raceId", "year", "round"] else 0.1
+                        step=1,
+                        format="%d"
+                    )
+                
+                elif field_type == "float":
+                    form_data[field_name] = st.number_input(
+                        label,
+                        value=0.0,
+                        step=0.1,
+                        format="%.1f"
                     )
                 
                 elif field_type == "date":
@@ -297,6 +306,14 @@ with tab2:
                         field_name = field["name"]
                         if form_data[field_name]:
                             form_data[field_name] = convert_date_to_string(form_data[field_name])
+                
+                # Converti numeri al tipo corretto
+                for field in schema["fields"]:
+                    field_name = field["name"]
+                    if field["type"] == "integer" and field_name in form_data:
+                        form_data[field_name] = int(form_data[field_name])
+                    elif field["type"] == "float" and field_name in form_data:
+                        form_data[field_name] = float(form_data[field_name])
                 
                 # Aggiungi nuovo record ai dati
                 data.append(form_data)
@@ -454,7 +471,7 @@ with tab3:
                     "interval": None,
                     "intervalMillis": None,
                     "reasonRetired": None,
-                    "points": 25,
+                    "points": 25.0,
                     "polePosition": True,
                     "qualificationPositionNumber": 1,
                     "qualificationPositionText": "1",
@@ -475,15 +492,17 @@ with tab3:
     
     with col3:
         if st.button("🔄 Reset", use_container_width=True):
-            st.session_state.example_json = ""
+            if 'example_json' in st.session_state:
+                del st.session_state.example_json
             st.rerun()
     
     # Usa l'esempio se presente in session_state
     if 'example_json' in st.session_state:
         json_input = st.text_area(
             "Incolla i dati JSON qui:",
-            value=st.session_state.example_json,
-            height=300
+            value=st.session_state.get('example_json', ''),
+            height=300,
+            key="json_input_area"
         )
     
     if add_records and json_input:
@@ -594,34 +613,52 @@ with tab4:
                         if field_type == "text":
                             edit_data[field_name] = st.text_input(
                                 label,
-                                value=str(current_value) if current_value is not None else ""
+                                value=str(current_value) if current_value is not None else "",
+                                key=f"edit_{field_name}_{record_idx}"
                             )
                         
-                        elif field_type == "number":
+                        elif field_type == "integer":
                             edit_data[field_name] = st.number_input(
                                 label,
-                                value=float(current_value) if current_value is not None else 0,
-                                step=1 if field_name in ["raceId", "year", "round"] else 0.1
+                                value=int(current_value) if current_value is not None else 0,
+                                step=1,
+                                format="%d",
+                                key=f"edit_{field_name}_{record_idx}"
+                            )
+                        
+                        elif field_type == "float":
+                            edit_data[field_name] = st.number_input(
+                                label,
+                                value=float(current_value) if current_value is not None else 0.0,
+                                step=0.1,
+                                format="%.1f",
+                                key=f"edit_{field_name}_{record_idx}"
                             )
                         
                         elif field_type == "date":
                             edit_data[field_name] = st.date_input(
                                 label,
-                                value=current_value
+                                value=current_value,
+                                key=f"edit_{field_name}_{record_idx}"
                             )
                         
                         elif field_type == "select":
-                            options = field.get("options", [])
+                            options_list = field.get("options", [])
+                            current_index = 0
+                            if current_value in options_list:
+                                current_index = options_list.index(current_value)
                             edit_data[field_name] = st.selectbox(
                                 label,
-                                options=options,
-                                index=options.index(current_value) if current_value in options else 0
+                                options=options_list,
+                                index=current_index,
+                                key=f"edit_{field_name}_{record_idx}"
                             )
                         
                         elif field_type == "checkbox":
                             edit_data[field_name] = st.checkbox(
                                 label,
-                                value=bool(current_value) if current_value is not None else False
+                                value=bool(current_value) if current_value is not None else False,
+                                key=f"edit_{field_name}_{record_idx}"
                             )
                     
                     col_idx = (col_idx + 1) % 2
@@ -652,6 +689,14 @@ with tab4:
                                 field_name = field["name"]
                                 edit_data[field_name] = convert_date_to_string(edit_data[field_name])
                         
+                        # Converti numeri al tipo corretto
+                        for field in schema["fields"]:
+                            field_name = field["name"]
+                            if field["type"] == "integer" and field_name in edit_data:
+                                edit_data[field_name] = int(edit_data[field_name])
+                            elif field["type"] == "float" and field_name in edit_data:
+                                edit_data[field_name] = float(edit_data[field_name])
+                        
                         # Aggiorna record
                         data[record_idx] = edit_data
                         
@@ -675,7 +720,7 @@ with tab4:
                     
                     # Modifica l'ID per evitare duplicati
                     if 'id' in duplicated_record:
-                        duplicated_record['id'] = f"{duplicated_record['id']}-copy"
+                        duplicated_record['id'] = f"{duplicated_record['id']}-copy-{len(data)}"
                     
                     if 'name' in duplicated_record:
                         duplicated_record['name'] = f"{duplicated_record['name']} (Copia)"
